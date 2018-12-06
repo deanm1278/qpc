@@ -1,5 +1,7 @@
 #include "qf_port.h"
 
+uint32_t _qxk_imask;
+
 /* prototypes --------------------------------------------------------------*/
 void QXK_stackInit_(void *act, QActionHandler thread,
                     void *stkSto, uint_fast16_t stkSize);
@@ -24,6 +26,7 @@ void QXK_stackInit_(void *act, QActionHandler thread,
 void QXK_init(void) {
 	// enable pendsv interrupt
 	sysreg_bit_set(sysreg_IMASK, BITM_REGF_IMASK_SFT3I);
+	sysreg_bit_set(sysreg_IMASK, BITM_REGF_IMASK_SFT2I);
 }
 
 /*****************************************************************************
@@ -44,16 +47,20 @@ void QXK_stackInit_(void *act, QActionHandler thread,
     extern void QXK_threadRet_(void); /* extended thread return */
 }
 
-/* NOTE: keep in synch with the QXK_Attr struct in "qxk.h" !!! */
-#define QXK_CURR       0
-#define QXK_NEXT       4
-#define QXK_ACT_PRIO   8
-#define QXK_IDLE_THR   12
-
-/* NOTE: keep in synch with the QXK_Attr struct in "qxk.h" !!! */
-/*Q_ASSERT_COMPILE(QXK_CURR == offsetof(QXK_Attr, curr));*/
-/*Q_ASSERT_COMPILE(QXK_NEXT == offsetof(QXK_Attr, next));*/
-/*Q_ASSERT_COMPILE(QXK_ACT_PRIO == offsetof(QXK_Attr, actPrio));*/
+/*****************************************************************************
+* Thread_ret is a helper function executed when the QXK activator returns.
+*
+* NOTE: Thread_ret does not execute in the PendSV context!
+* NOTE: Thread_ret executes entirely with interrupts DISABLED.
+*****************************************************************************/
+#pragma noreturn
+void _Thread_ret(void){
+	_qxk_imask = sysreg_read(sysreg_IMASK);
+	sysreg_write(sysreg_IMASK, BITM_REGF_IRPTL_SFT2I);
+	QF_INT_ENABLE();
+	sysreg_bit_set(sysreg_IRPTL, BITM_REGF_IRPTL_SFT2I);
+	while(1);
+}
 
 /* NOTE: keep in synch with the QMActive struct in "qf.h/qxk.h" !!! */
 #define QMACTIVE_OSOBJ 28
