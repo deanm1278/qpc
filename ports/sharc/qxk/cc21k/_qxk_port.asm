@@ -201,7 +201,8 @@ __NMI_Handler:
     ASTATy = DM(LOC(ASTATy), I7);       /* Restore ASTATx and ASTATy. */
     ASTATx = DM(LOC(ASTATx), I7);
     STKYy  = DM(LOC(STKYy),  I7);        /* Restore the STKY flags, nothing that we do from here on out should change these */
-    STKYx   = DM(LOC(STKYx), I7); 
+    STKYx   = DM(LOC(STKYx), I7);
+    MODE1 = DM(LOC(MODE1), I7); 
     
     PCSTK   = DM(LOC(PCSTK), I7); 	/* Restore clobbered return address */
     
@@ -251,7 +252,7 @@ __pendSV:
 	/* SAVE THE CONTEXT */
 	
 	/* Save all registers that are part of the status stack */
-    DM(LOC(MODE1), I7) = MODE1STK; /* save MODE1 from the copy on the status stack */
+    DM(LOC(MODE1), I7) = MODE1; /* save MODE1 */
     DM(LOC(STKYx), I7) = STKYx;
     DM(LOC(STKYy), I7) = STKYy;
     DM(LOC(PX1), I7) = PX1;
@@ -418,8 +419,8 @@ __pendSV:
 	//
 	// We have to ensure that MODE1 doesn't change when we pop the status stack, so we
 	// replace the stacked MODE1 value with the current value.
-	MODE1STK = MODE1; // MODE1STK has already been saved to the context record, above
-    POP STS;                // no effect delay (ToDo: check this)
+	//MODE1STK = MODE1; // MODE1STK has already been saved to the context record, above
+    //POP STS;                // no effect delay (ToDo: check this)
 	DM(LOC(ASTATx), I7) = ASTATX;	
 	DM(LOC(ASTATy), I7) = ASTATY;	
 

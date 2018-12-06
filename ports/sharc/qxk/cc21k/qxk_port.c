@@ -57,8 +57,8 @@ void QXK_stackInit_(void *act, QActionHandler thread,
 void _Thread_ret(void){
 	_qxk_imask = sysreg_read(sysreg_IMASK);
 	sysreg_write(sysreg_IMASK, BITM_REGF_IRPTL_SFT2I);
-	QF_INT_ENABLE();
 	sysreg_bit_set(sysreg_IRPTL, BITM_REGF_IRPTL_SFT2I);
+	QF_INT_ENABLE();
 	while(1);
 }
 
