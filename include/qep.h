@@ -67,7 +67,9 @@
 * strings. Use of this type, rather than plain 'char', is in compliance
 * with the MISRA-C 2004 Rules 6.1(req), 6.3(adv).
 */
+#ifndef __ADI_TYPES_H__ //DM: these conflict with ADI framework
 typedef char char_t;
+#endif
 
 /*! typedef for line numbers in assertions and return from QF_run() */
 typedef int int_t;
@@ -82,7 +84,9 @@ typedef int enum_t;
 * output of floating-point numbers are provided for application-level
 * trace records.
 */
+#ifndef __ADI_TYPES_H__
 typedef float float32_t;
+#endif
 
 /*! IEEE 754 64-bit floating point number, MISRA-C 2004 rule 6.3(req) */
 /**
@@ -91,8 +95,9 @@ typedef float float32_t;
 * output of floating-point numbers are provided for application-level
 * trace records.
 */
+#ifndef __ADI_TYPES_H__
 typedef double float64_t;
-
+#endif
 
 /*! the current QP version number string in ROM, based on QP_VERSION_STR */
 extern char_t const QP_versionStr[6];
